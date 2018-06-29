@@ -1,5 +1,5 @@
 {
-  "name": "translate-jp",
+  "name": "transform-jp",
   "version": "0.0.1",
   "description": "Translate javascript to Japanese (Experimental)",
   "main": "index.js",
