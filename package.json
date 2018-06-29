@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "format": "prettier 'src/**/*' --write",
+    "watch": "mocha -r ts-node/register src/**/*.spec.ts --watch  --recursive",
     "test": "mocha -r ts-node/register src/**/*.spec.ts"
   },
   "keywords": [
@@ -14,8 +15,14 @@
   "author": "teramotodaiki",
   "license": "ISC",
   "dependencies": {
+    "@types/babel-generator": "^6.25.2",
+    "@types/babel-traverse": "^6.25.4",
+    "@types/babylon": "^6.16.3",
     "@types/node": "^10.3.5",
-    "babel-standalone": "^6.26.0"
+    "babel-generator": "^6.26.1",
+    "babel-standalone": "^6.26.0",
+    "babel-traverse": "^6.26.0",
+    "babylon": "^6.18.0"
   },
   "devDependencies": {
     "@types/chai": "^4.1.4",

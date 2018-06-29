@@ -15,7 +15,8 @@ export default React.createClass({
 
 describe('Main', () => {
   it('Get Japanese', () => {
-    const ja = index.translate(code);
+    index.translate(code);
+    const ja = index.getJapanese();
     expect(ja).to.be.equals('React Component を つくる'); // 適当
   });
 });
