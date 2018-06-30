@@ -16,23 +16,42 @@ for (const fileName of files) {
       encoding: 'utf8'
     });
     const ast = JSON.parse(json);
-    const state: KanaState = { comments: [] };
+    const state: KanaState = { kanas: [] };
     traverse(ast, kanaGenerator, null, state); // kana
+    console.log(state.kanas);
     const result = generate(ast, {}); // javascript
-    const code = mergeComments(result.code, state.comments); // merge both
-    console.log(state.comments);
+    const code = mergeComments(result.code, state); // merge both
 
     const basename = path.basename(fileName, 'json');
     fs.writeFileSync(path.join(fixtures, 'kana', basename + 'js'), code);
   }
 }
 
-function mergeComments(code: string, comments: Array<string>) {
+/**
+ * コードとふりがなをまとめる
+ * @param code javascript コード
+ * @param state ふりがな配列をもつオブジェクト
+ */
+function mergeComments(code: string, state: KanaState) {
+  state.kanas.sort(
+    (a, b) => (a.line !== b.line ? a.line - b.line : a.column - b.column)
+  );
+  const commentsOfEachLine: Array<string> = [];
+  for (const segment of state.kanas) {
+    const { line, column, value } = segment;
+    if (!commentsOfEachLine[line]) {
+      // この行の最初のワードなのでインデントと '//' を入れる
+      commentsOfEachLine[line] = ' '.repeat(column) + '// ' + value;
+    } else {
+      // ワードとワードの間にスペースを入れる
+      commentsOfEachLine[line] = commentsOfEachLine[line] + ' ' + value;
+    }
+  }
   return code
     .split('\n')
     .map((textOfCode, lineOfCode) => {
-      if (comments[lineOfCode + 1]) {
-        return comments[lineOfCode + 1] + '\n' + textOfCode;
+      if (commentsOfEachLine[lineOfCode + 1]) {
+        return commentsOfEachLine[lineOfCode + 1] + '\n' + textOfCode;
       } else {
         return textOfCode;
       }

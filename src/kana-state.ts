@@ -1,3 +1,7 @@
 export default interface KanaState {
-  comments: Array<string>;
+  kanas: Array<{
+    line: number;
+    column: number;
+    value: string;
+  }>;
 }

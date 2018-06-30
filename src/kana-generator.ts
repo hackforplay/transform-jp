@@ -7,16 +7,10 @@ import S from './kana-state';
  * @param state ミュータブルなオブジェクト
  * @param line 行数
  * @param column 文字数
- * @param kana コメントに追加したいよみがな
+ * @param value コメントに追加したいよみがな
  */
-function set(state: S, line: number, column: number, kana: string) {
-  if (!state.comments[line]) {
-    // この行の最初のワードなのでインデントと '//' を入れる
-    state.comments[line] = ' '.repeat(column) + '// ' + kana;
-  } else {
-    // ワードとワードの間にスペースを入れる
-    state.comments[line] = state.comments[line] + ' ' + kana;
-  }
+function set(state: S, line: number, column: number, value: string) {
+  state.kanas.push({ line, column, value });
 }
 
 const visitor = {
@@ -296,7 +290,7 @@ const visitor = {
       set(state, line, column, '別の場所からとってこい');
     },
     exit(path: NodePath<t.ImportDeclaration>, state: S) {
-      const { line, column } = path.node.loc.start;
+      const { line, column } = path.node.loc.end;
       set(state, line, column, ' 場所は 「' + path.node.source.value + '」');
     }
   },
