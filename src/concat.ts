@@ -13,35 +13,51 @@ for (const fileName of files) {
     });
     const ast = JSON.parse(json);
 
-    const text = ast.tokens.map(stringify).join('');
+    const text = ast.tokens
+      .reduce(reducer, [])
+      .slice(1)
+      .join('\n');
     const basename = path.basename(fileName, 'json');
     fs.writeFileSync(path.join(fixtures, 'concat', basename + 'js'), text);
   }
 }
 
-function stringify(token: any) {
-  let segment = '';
-  const { line, column } = token.loc.start;
+function reducer(previous: Array<String>, token: any) {
+  const { line } = token.loc.start;
+  previous[line] = previous[line]
+    ? previous[line] + ' ' + stringify(token)
+    : stringify(token);
+  return previous;
+}
 
-  // 改行は0文字目から始まるという安直な考え方
-  if (line > 1 && column === 0) {
-    segment += '\n';
+function stringify(token: any) {
+  let segment;
+
+  if (typeof token.type === 'string') {
+    switch (token.type) {
+      case 'CommentLine':
+        segment = `//${token.value}`;
+        break;
+      default:
+        segment = JSON.stringify(token);
+    }
+  } else {
+    switch (token.type.label) {
+      case 'eof':
+        break;
+      case 'name':
+      case '==/!=':
+      case '+/-':
+      case '*//':
+        segment = token.value;
+        break;
+      case 'string':
+        segment = `'${token.value}'`;
+        break;
+      default:
+        segment = token.type.label;
+    }
   }
-  // 単語間のスペースをあけておく
-  if (column > 0) {
-    segment = ' ' + segment;
-  }
-  // value がある場合はそれを出力
-  if (token.value) {
-    segment += token.value;
-  }
-  // value がない場合は type.label があればそれを出力
-  else if (token.type.label && token.type.label !== 'eof') {
-    segment += token.type.label;
-  }
-  // コメントの場合は "//" をつける
-  if (token.type === 'CommentLine') {
-    segment = '//' + token.value;
-  }
+
   return segment;
 }

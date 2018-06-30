@@ -1,0 +1,2 @@
+新規作成 message 入れろ 文字列'hogehoge' ;
+console . log ( message ) ;

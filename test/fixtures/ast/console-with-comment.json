@@ -102,8 +102,7 @@
         "leadingComments": [
           {
             "type": "CommentLine",
-            "value":
-              "leadingComments 新規作成 変数message 入れろ 文字列hogehoge",
+            "value": " 新規作成 変数message 入れろ 文字列hogehoge",
             "start": 0,
             "end": 33,
             "loc": {
@@ -121,7 +120,7 @@
         "trailingComments": [
           {
             "type": "CommentLine",
-            "value": "trailingComments コンソールに表示しろ 変数message",
+            "value": " コンソールに表示しろ 変数message",
             "start": 62,
             "end": 85,
             "loc": {
@@ -241,7 +240,7 @@
         "leadingComments": [
           {
             "type": "CommentLine",
-            "value": "leadingComments コンソールに表示しろ 変数message",
+            "value": " コンソールに表示しろ 変数message",
             "start": 62,
             "end": 85,
             "loc": {
@@ -263,8 +262,7 @@
   "comments": [
     {
       "type": "CommentLine",
-      "value":
-        " iuahiweufhiwufiuwigu新規作成 変数message 入れろ 文字列hogehoge",
+      "value": " 新規作成 変数message 入れろ 文字列hogehoge",
       "start": 0,
       "end": 33,
       "loc": {
@@ -280,7 +278,7 @@
     },
     {
       "type": "CommentLine",
-      "value": " woaiejgoaijofiaoweifhohコンソールに表示しろ 変数message",
+      "value": " コンソールに表示しろ 変数message",
       "start": 62,
       "end": 85,
       "loc": {
@@ -298,7 +296,7 @@
   "tokens": [
     {
       "type": "CommentLine",
-      "value": " eeefsefswefwaeg 新規作成 変数message 入れろ 文字列hogehoge",
+      "value": " 新規作成 変数message 入れろ 文字列hogehoge",
       "start": 0,
       "end": 33,
       "loc": {
@@ -448,7 +446,7 @@
     },
     {
       "type": "CommentLine",
-      "value": "aegagaerhseh コンソールに表示しろ 変数message",
+      "value": " コンソールに表示しろ 変数message",
       "start": 62,
       "end": 85,
       "loc": {
