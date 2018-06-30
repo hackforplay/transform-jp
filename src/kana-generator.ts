@@ -17,7 +17,11 @@ const visitor = {
   ArrayExpression() {
     no(arguments);
   },
-  AssignmentExpression() {},
+  AssignmentExpression(path: NodePath<t.AssignmentExpression>, state: S) {
+    const { left } = path.node;
+    const { line, column } = left.loc.end;
+    set(state, line, column, '入れろ');
+  },
   LVal() {
     no(arguments);
   },
@@ -25,18 +29,8 @@ const visitor = {
     no(arguments);
   },
   BinaryExpression(path: NodePath<t.BinaryExpression>, state: S) {
-    const { line, column } = path.node.loc.start;
-    const { left, operator, right } = path.node;
-    let kana = '';
-    if (t.isIdentifier(left)) {
-      kana += '変数' + left.name + ' ';
-    }
-    kana += operator;
-    if (t.isIdentifier(right)) {
-      kana += '変数' + right.name;
-    }
-    set(state, line, column, kana);
-    path.skip();
+    const { line, column } = path.node.left.loc.end;
+    set(state, line, column, path.node.operator);
   },
   Directive() {
     no(arguments);
@@ -56,19 +50,24 @@ const visitor = {
    */
   Identifier(path: NodePath<t.Identifier>, state: S) {
     const { line, column } = path.node.loc.start;
-    switch (path.parent.type) {
-      case 'ObjectProperty':
-        set(state, line, column, `の${path.node.name}`);
-        break;
-      case 'ObjectMethod':
-        set(state, line, column, `の関数${path.node.name}`);
-        break;
-      case 'MemberExpression':
-        set(state, line, column, `${path.node.name}`);
-        break;
-      default:
-        set(state, line, column, `変数${path.node.name}`);
-        break;
+    if (t.isAssignmentExpression(path.parent)) {
+      // [変数a] 入れろ
+      set(state, line, column, `変数${path.node.name}`);
+    } else if (t.isVariableDeclarator(path.parent)) {
+      // 新規作成 [変数a]
+      set(state, line, column, `変数${path.node.name}`);
+    } else if (t.isObjectProperty(path.parent)) {
+      //
+      set(state, line, column, `の${path.node.name}`);
+    } else if (t.isObjectMember(path.parent)) {
+      //
+      set(state, line, column, `関数${path.node.name}`);
+    } else if (t.isBinaryExpression(path.parent)) {
+      // [変数a] + 数値1
+      set(state, line, column, `変数${path.node.name}`);
+    } else if (t.isUpdateExpression(path.parent)) {
+      // [変数a] １ふやす
+      set(state, line, column, `変数${path.node.name}`);
     }
   },
   CallExpression() {
@@ -116,13 +115,26 @@ const visitor = {
     set(state, line, column, '新規作成');
   },
   /**
-   * くりかえせ 最初だけ 変数i 入れろ 数値0 もし 数値i < 数値10 ならばもう一度 毎回 数値i ひとつ増やす
+   * くりかえせ 最初だけ 新規作成 変数i 入れろ 数値0 もし 数値i < 数値10 ならばもう一度 毎回 数値i ひとつ増やす
    * @param path
    * @param state
    */
   ForStatement(path: NodePath<t.ForStatement>, state: S) {
     const { line, column } = path.node.loc.start;
-    set(state, line, column, 'くりかえせ 最初だけ');
+    set(state, line, column, 'くりかえせ');
+    if (path.node.init) {
+      const { line, column } = path.node.init.loc.start;
+      set(state, line, column, '最初だけ');
+    }
+    if (path.node.test) {
+      const { start, end } = path.node.test.loc;
+      set(state, start.line, start.column, '。もし');
+      set(state, end.line, end.column, 'ならばもう一度');
+    }
+    if (path.node.update) {
+      const { line, column } = path.node.update.loc.start;
+      set(state, line, column, '。毎回');
+    }
   },
   FunctionDeclaration() {
     no(arguments);
@@ -203,39 +215,18 @@ const visitor = {
   },
   UpdateExpression: {
     exit(path: NodePath<t.UpdateExpression>, state: S) {
-      const { line, column } = path.node.loc.start;
-      const { operator } = path.node;
-      let kana = '';
-      switch (operator) {
-        case '++':
-          kana = '１ふやす';
-          break;
-        case '--':
-          kana = '１へらす';
-          break;
-      }
+      const { line, column } = path.node.loc.end;
+      const kana = { '++': '１ふやす', '--': '１へらす' }[path.node.operator];
       set(state, line, column, kana);
-      path.skip();
     }
   },
-  VariableDeclarator(path: NodePath<t.VariableDeclarator>, state: S) {
-    const { line, column } = path.node.loc.start;
-    const { id, init } = path.node;
-    let kana = '変数';
-    if (t.isIdentifier(id)) {
-      kana += id.name;
+  VariableDeclarator: {
+    exit(path: NodePath<t.VariableDeclarator>, state: S) {
+      const { line, column } = path.node.id.loc.end;
+      if (path.node.init) {
+        set(state, line, column, '入れろ');
+      }
     }
-    if (t.isStringLiteral(init)) {
-      kana += ' 入れろ 文字列' + init.value;
-    } else if (t.isNumericLiteral(init)) {
-      kana += ' 入れろ 数値' + init.value;
-    } else if (t.isNullLiteral(init)) {
-      kana += ' 入れろ ヌル';
-    } else if (t.isBooleanLiteral(init)) {
-      kana += ' 入れろ ' + init.value;
-    }
-    set(state, line, column, kana);
-    path.skip();
   },
   WhileStatement() {
     no(arguments);

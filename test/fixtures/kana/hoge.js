@@ -9,13 +9,12 @@ import { module1, module2 as localName } from 'hoge';
 const const1 = 1;
 // 新規作成 変数number
 let number;
-// 変数number 数値1
+// 変数number 入れろ 数値1
 number = 1;
-// 変数number +
+// 変数number 入れろ 変数number + 数値2 + 数値3
 number = number + 2 + 3;
 
-// くりかえせ 最初だけ 新規作成 変数i 入れろ 数値0 変数i < 変数i １ふやす
+// くりかえせ 最初だけ 新規作成 変数i 入れろ 数値0 変数i 。もし < 数値10 ならばもう一度 。毎回 変数i １ふやす
 for (let i = 0; i < 10; i++) {
-  // console log 変数i
   console.log(i);
 }
