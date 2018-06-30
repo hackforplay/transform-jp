@@ -4,6 +4,9 @@
   "description": "Translate javascript to Japanese (Experimental)",
   "main": "index.js",
   "scripts": {
+    "gen": "tsc && node lib/generate.js",
+    "ast": "tsc && node lib/ast.js",
+    "con": "tsc && node lib/concat.js",
     "format": "prettier 'src/**/*' --write",
     "watch": "mocha -r ts-node/register src/**/*.spec.ts --watch  --recursive",
     "test": "mocha -r ts-node/register src/**/*.spec.ts"
