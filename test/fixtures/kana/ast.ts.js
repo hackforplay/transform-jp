@@ -1,7 +1,9 @@
+// 別の場所からとってこい 「parse」 場所は 「babylon」
 import { parse } from 'babylon';
 import * as fs from 'fs';
 import * as path from 'path';
 
+let noAsign;
 const testFilePath = './test/fixtures';
 const fixtures = path.resolve(testFilePath);
 

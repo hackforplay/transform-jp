@@ -4,6 +4,7 @@
   "description": "Translate javascript to Japanese (Experimental)",
   "main": "index.js",
   "scripts": {
+    "kana": "tsc && node lib/kana.js",
     "gen": "tsc && node lib/generate.js",
     "ast": "tsc && node lib/ast.js",
     "con": "tsc && node lib/concat.js",
@@ -21,11 +22,13 @@
   "dependencies": {
     "@types/babel-generator": "^6.25.2",
     "@types/babel-traverse": "^6.25.4",
+    "@types/babel-types": "^7.0.4",
     "@types/babylon": "^6.16.3",
     "@types/node": "^10.3.5",
     "babel-generator": "^6.26.1",
     "babel-standalone": "^6.26.0",
     "babel-traverse": "^6.26.0",
+    "babel-types": "^6.26.0",
     "babylon": "^6.18.0"
   },
   "devDependencies": {
