@@ -2,6 +2,13 @@ import * as t from 'babel-types';
 import { NodePath } from 'babel-traverse';
 import S from './kana-state';
 
+/**
+ * 指定した行のコメント文として単語を追加する
+ * @param state ミュータブルなオブジェクト
+ * @param line 行数
+ * @param column 文字数
+ * @param kana コメントに追加したいよみがな
+ */
 function set(state: S, line: number, column: number, kana: string) {
   if (!state.comments[line]) {
     // この行の最初のワードなのでインデントと '//' を入れる
@@ -12,34 +19,47 @@ function set(state: S, line: number, column: number, kana: string) {
   }
 }
 
-export default {
+const visitor = {
   ArrayExpression() {
-    n(arguments);
+    no(arguments);
   },
-  AssignmentExpression() {
-    n(arguments);
-  },
+  AssignmentExpression() {},
   LVal() {
-    n(arguments);
+    no(arguments);
   },
   Expression() {
-    n(arguments);
+    no(arguments);
   },
-  BinaryExpression() {
-    n(arguments);
+  BinaryExpression(path: NodePath<t.BinaryExpression>, state: S) {
+    const { line, column } = path.node.loc.start;
+    const { left, operator, right } = path.node;
+    let kana = '';
+    if (t.isIdentifier(left)) {
+      kana += '変数' + left.name + ' ';
+    }
+    kana += operator;
+    if (t.isIdentifier(right)) {
+      kana += '変数' + right.name;
+    }
+    set(state, line, column, kana);
+    path.skip();
   },
   Directive() {
-    n(arguments);
+    no(arguments);
   },
   DirectiveLiteral() {
-    n(arguments);
+    no(arguments);
   },
   BlockStatement() {
-    n(arguments);
+    no(arguments);
   },
   BreakStatement() {
-    n(arguments);
+    no(arguments);
   },
+  /**
+   * @param path
+   * @param state
+   */
   Identifier(path: NodePath<t.Identifier>, state: S) {
     const { line, column } = path.node.loc.start;
     switch (path.parent.type) {
@@ -58,38 +78,38 @@ export default {
     }
   },
   CallExpression() {
-    n(arguments);
+    no(arguments);
   },
   CatchClause() {
-    n(arguments);
+    no(arguments);
   },
   ConditionalExpression() {
-    n(arguments);
+    no(arguments);
   },
   ContinueStatement() {
-    n(arguments);
+    no(arguments);
   },
   DebuggerStatement() {
-    n(arguments);
+    no(arguments);
   },
   DoWhileStatement() {
-    n(arguments);
+    no(arguments);
   },
   Statement() {
-    n(arguments);
+    no(arguments);
   },
   EmptyStatement() {
-    n(arguments);
+    no(arguments);
   },
   ExpressionStatement() {
-    n(arguments);
+    no(arguments);
   },
   File() {
-    n(arguments);
+    no(arguments);
   },
   Program() {},
   ForInStatement() {
-    n(arguments);
+    no(arguments);
   },
   /**
    * 新規作成 変数hoge
@@ -99,482 +119,523 @@ export default {
    */
   VariableDeclaration(path: NodePath<t.VariableDeclaration>, state: S) {
     const { line, column } = path.node.loc.start;
-    let kana = '新規作成 変数';
-    const { id, init } = path.node.declarations[0];
-    if (t.isIdentifier(id)) {
-      kana += id.name;
-    }
-    if (t.isStringLiteral(init)) {
-      kana += ' 入れろ 文字列' + init.value;
-    }
-    set(state, line, column, kana);
+    set(state, line, column, '新規作成');
   },
-  ForStatement() {
-    n(arguments);
+  /**
+   * くりかえせ 最初だけ 変数i 入れろ 数値0 もし 数値i < 数値10 ならばもう一度 毎回 数値i ひとつ増やす
+   * @param path
+   * @param state
+   */
+  ForStatement(path: NodePath<t.ForStatement>, state: S) {
+    const { line, column } = path.node.loc.start;
+    set(state, line, column, 'くりかえせ 最初だけ');
   },
   FunctionDeclaration() {
-    n(arguments);
+    no(arguments);
   },
   FunctionExpression() {
-    n(arguments);
+    no(arguments);
   },
   IfStatement() {
-    n(arguments);
+    no(arguments);
   },
   LabeledStatement() {
-    n(arguments);
+    no(arguments);
   },
-  StringLiteral() {
-    n(arguments);
+  StringLiteral(path: NodePath<t.StringLiteral>, state: S) {
+    const { line, column } = path.node.loc.start;
+    set(state, line, column, '文字列' + path.node.value);
   },
-  NumericLiteral() {
-    n(arguments);
+  NumericLiteral(path: NodePath<t.NumericLiteral>, state: S) {
+    const { line, column } = path.node.loc.start;
+    set(state, line, column, '数値' + path.node.value);
   },
-  NullLiteral() {
-    n(arguments);
+  NullLiteral(path: NodePath<t.NullLiteral>, state: S) {
+    const { line, column } = path.node.loc.start;
+    set(state, line, column, 'ヌル');
   },
-  BooleanLiteral() {
-    n(arguments);
+  BooleanLiteral(path: NodePath<t.BooleanLiteral>, state: S) {
+    const { line, column } = path.node.loc.start;
+    set(state, line, column, path.node.value ? '真' : '偽');
   },
   RegExpLiteral() {
-    n(arguments);
+    no(arguments);
   },
   LogicalExpression() {
-    n(arguments);
+    no(arguments);
   },
   MemberExpression() {
-    n(arguments);
+    no(arguments);
   },
   NewExpression() {
-    n(arguments);
+    no(arguments);
   },
   ObjectExpression() {
-    n(arguments);
+    no(arguments);
   },
   ObjectMethod() {
-    n(arguments);
+    no(arguments);
   },
   ObjectProperty() {
-    n(arguments);
+    no(arguments);
   },
   RestElement() {
-    n(arguments);
+    no(arguments);
   },
   ReturnStatement(path: NodePath<t.ReturnStatement>, state: S) {
     const { line, column } = path.node.loc.start;
     set(state, line, column, '呼び出し元に返せ');
   },
   SequenceExpression() {
-    n(arguments);
+    no(arguments);
   },
   SwitchCase() {
-    n(arguments);
+    no(arguments);
   },
   SwitchStatement() {
-    n(arguments);
+    no(arguments);
   },
   ThisExpression() {
-    n(arguments);
+    no(arguments);
   },
   ThrowStatement() {
-    n(arguments);
+    no(arguments);
   },
   TryStatement() {
-    n(arguments);
+    no(arguments);
   },
   UnaryExpression() {
-    n(arguments);
+    no(arguments);
   },
-  UpdateExpression() {
-    n(arguments);
+  UpdateExpression: {
+    exit(path: NodePath<t.UpdateExpression>, state: S) {
+      const { line, column } = path.node.loc.start;
+      const { operator } = path.node;
+      let kana = '';
+      switch (operator) {
+        case '++':
+          kana = '１ふやす';
+          break;
+        case '--':
+          kana = '１へらす';
+          break;
+      }
+      set(state, line, column, kana);
+      path.skip();
+    }
   },
-  VariableDeclarator() {
-    n(arguments);
+  VariableDeclarator(path: NodePath<t.VariableDeclarator>, state: S) {
+    const { line, column } = path.node.loc.start;
+    const { id, init } = path.node;
+    let kana = '変数';
+    if (t.isIdentifier(id)) {
+      kana += id.name;
+    }
+    if (t.isStringLiteral(init)) {
+      kana += ' 入れろ 文字列' + init.value;
+    } else if (t.isNumericLiteral(init)) {
+      kana += ' 入れろ 数値' + init.value;
+    } else if (t.isNullLiteral(init)) {
+      kana += ' 入れろ ヌル';
+    } else if (t.isBooleanLiteral(init)) {
+      kana += ' 入れろ ' + init.value;
+    }
+    set(state, line, column, kana);
+    path.skip();
   },
   WhileStatement() {
-    n(arguments);
+    no(arguments);
   },
   WithStatement() {
-    n(arguments);
+    no(arguments);
   },
   AssignmentPattern() {
-    n(arguments);
+    no(arguments);
   },
   ArrayPattern() {
-    n(arguments);
+    no(arguments);
   },
   ArrowFunctionExpression() {
-    n(arguments);
+    no(arguments);
   },
   ClassBody() {
-    n(arguments);
+    no(arguments);
   },
   ClassDeclaration() {
-    n(arguments);
+    no(arguments);
   },
   ClassExpression() {
-    n(arguments);
+    no(arguments);
   },
   ExportAllDeclaration() {
-    n(arguments);
+    no(arguments);
   },
   ExportDefaultDeclaration() {
-    n(arguments);
+    no(arguments);
   },
   ExportNamedDeclaration() {
-    n(arguments);
+    no(arguments);
   },
   Declaration() {
-    n(arguments);
+    no(arguments);
   },
   ExportSpecifier() {
-    n(arguments);
+    no(arguments);
   },
   ForOfStatement() {
-    n(arguments);
+    no(arguments);
   },
   /**
    * 別の場所からとってこい 変数hogeA 場所は 「hoge」
    * 別の場所からとってこい 全部まとめて 変数hogeB 場所は 「hoge」
-   * 別の場所からとってこい 「hoge」 と 「fuga」（変数fufu） 場所は 「hoge」
-   * @param path
-   * @param state
+   * 別の場所からとってこい 「hoge」  「fuga」（変数fufu） 場所は 「hoge」
    */
-  ImportDeclaration(path: NodePath<t.ImportDeclaration>, state: S) {
-    const { line, column } = path.node.loc.start;
-    let kana = '別の場所からとってこい ';
-    const identifiers = [];
-    for (const specifier of path.node.specifiers) {
-      if (t.isImportDefaultSpecifier(specifier)) {
-        identifiers.push('変数' + specifier.local.name);
-      } else if (t.isImportNamespaceSpecifier(specifier)) {
-        kana += '全部まとめて ';
-        identifiers.push('変数' + specifier.local.name);
-      } else if (t.isImportSpecifier(specifier)) {
-        if (specifier.imported.name === specifier.local.name) {
-          identifiers.push(`「${specifier.imported.name}」`);
-        } else {
-          identifiers.push(
-            `「${specifier.imported.name}」（変数${specifier.local.name}）`
-          );
-        }
-      }
+  ImportDeclaration: {
+    enter(path: NodePath<t.ImportDeclaration>, state: S) {
+      const { line, column } = path.node.loc.start;
+      set(state, line, column, '別の場所からとってこい');
+    },
+    exit(path: NodePath<t.ImportDeclaration>, state: S) {
+      const { line, column } = path.node.loc.start;
+      set(state, line, column, ' 場所は 「' + path.node.source.value + '」');
     }
-    kana += identifiers.join(' と ');
-    kana += ' 場所は 「' + path.node.source.value + '」';
-    set(state, line, column, kana);
-    path.skip();
   },
-  ImportDefaultSpecifier() {},
-  ImportNamespaceSpecifier() {},
-  ImportSpecifier() {},
+  ImportDefaultSpecifier(path: NodePath<t.ImportDefaultSpecifier>, state: S) {
+    const { line, column } = path.node.loc.start;
+    set(state, line, column, '変数' + path.node.local.name);
+    path.skip(); // TODO: 消す
+  },
+  ImportNamespaceSpecifier(
+    path: NodePath<t.ImportNamespaceSpecifier>,
+    state: S
+  ) {
+    const { line, column } = path.node.loc.start;
+    set(state, line, column, '全部まとめて 変数' + path.node.local.name);
+    path.skip(); // TODO: 消す
+  },
+  ImportSpecifier(path: NodePath<t.ImportSpecifier>, state: S) {
+    const { line, column } = path.node.loc.start;
+    if (path.node.imported.name === path.node.local.name) {
+      set(state, line, column, `「${path.node.imported.name}」`);
+    } else {
+      set(
+        state,
+        line,
+        column,
+        `「${path.node.imported.name}→変数${path.node.local.name}」`
+      );
+    }
+    path.skip(); // TODO: 消す
+  },
   MetaProperty() {
-    n(arguments);
+    no(arguments);
   },
   ClassMethod() {
-    n(arguments);
+    no(arguments);
   },
   ObjectPattern() {
-    n(arguments);
+    no(arguments);
   },
   SpreadElement() {
-    n(arguments);
+    no(arguments);
   },
   Super() {
-    n(arguments);
+    no(arguments);
   },
   TaggedTemplateExpression() {
-    n(arguments);
+    no(arguments);
   },
   TemplateLiteral() {
-    n(arguments);
+    no(arguments);
   },
   TemplateElement() {
-    n(arguments);
+    no(arguments);
   },
   YieldExpression() {
-    n(arguments);
+    no(arguments);
   },
   AnyTypeAnnotation() {
-    n(arguments);
+    no(arguments);
   },
   ArrayTypeAnnotation() {
-    n(arguments);
+    no(arguments);
   },
   BooleanTypeAnnotation() {
-    n(arguments);
+    no(arguments);
   },
   BooleanLiteralTypeAnnotation() {
-    n(arguments);
+    no(arguments);
   },
   NullLiteralTypeAnnotation() {
-    n(arguments);
+    no(arguments);
   },
   ClassImplements() {
-    n(arguments);
+    no(arguments);
   },
   ClassProperty() {
-    n(arguments);
+    no(arguments);
   },
   DeclareClass() {
-    n(arguments);
+    no(arguments);
   },
   DeclareFunction() {
-    n(arguments);
+    no(arguments);
   },
   DeclareInterface() {
-    n(arguments);
+    no(arguments);
   },
   DeclareModule() {
-    n(arguments);
+    no(arguments);
   },
   DeclareTypeAlias() {
-    n(arguments);
+    no(arguments);
   },
   DeclareVariable() {
-    n(arguments);
+    no(arguments);
   },
   ExistentialTypeParam() {
-    n(arguments);
+    no(arguments);
   },
   FunctionTypeAnnotation() {
-    n(arguments);
+    no(arguments);
   },
   FunctionTypeParam() {
-    n(arguments);
+    no(arguments);
   },
   GenericTypeAnnotation() {
-    n(arguments);
+    no(arguments);
   },
   InterfaceExtends() {
-    n(arguments);
+    no(arguments);
   },
   InterfaceDeclaration() {
-    n(arguments);
+    no(arguments);
   },
   IntersectionTypeAnnotation() {
-    n(arguments);
+    no(arguments);
   },
   MixedTypeAnnotation() {
-    n(arguments);
+    no(arguments);
   },
   NullableTypeAnnotation() {
-    n(arguments);
+    no(arguments);
   },
   NumericLiteralTypeAnnotation() {
-    n(arguments);
+    no(arguments);
   },
   NumberTypeAnnotation() {
-    n(arguments);
+    no(arguments);
   },
   StringLiteralTypeAnnotation() {
-    n(arguments);
+    no(arguments);
   },
   StringTypeAnnotation() {
-    n(arguments);
+    no(arguments);
   },
   ThisTypeAnnotation() {
-    n(arguments);
+    no(arguments);
   },
   TupleTypeAnnotation() {
-    n(arguments);
+    no(arguments);
   },
   TypeofTypeAnnotation() {
-    n(arguments);
+    no(arguments);
   },
   TypeAlias() {
-    n(arguments);
+    no(arguments);
   },
   TypeAnnotation() {
-    n(arguments);
+    no(arguments);
   },
   TypeCastExpression() {
-    n(arguments);
+    no(arguments);
   },
   TypeParameterDeclaration() {
-    n(arguments);
+    no(arguments);
   },
   TypeParameterInstantiation() {
-    n(arguments);
+    no(arguments);
   },
   ObjectTypeAnnotation() {
-    n(arguments);
+    no(arguments);
   },
   ObjectTypeCallProperty() {
-    n(arguments);
+    no(arguments);
   },
   ObjectTypeIndexer() {
-    n(arguments);
+    no(arguments);
   },
   ObjectTypeProperty() {
-    n(arguments);
+    no(arguments);
   },
   QualifiedTypeIdentifier() {
-    n(arguments);
+    no(arguments);
   },
   UnionTypeAnnotation() {
-    n(arguments);
+    no(arguments);
   },
   VoidTypeAnnotation() {
-    n(arguments);
+    no(arguments);
   },
   JSXAttribute() {
-    n(arguments);
+    no(arguments);
   },
   JSXIdentifier() {
-    n(arguments);
+    no(arguments);
   },
   JSXNamespacedName() {
-    n(arguments);
+    no(arguments);
   },
   JSXElement() {
-    n(arguments);
+    no(arguments);
   },
   JSXExpressionContainer() {
-    n(arguments);
+    no(arguments);
   },
   JSXClosingElement() {
-    n(arguments);
+    no(arguments);
   },
   JSXMemberExpression() {
-    n(arguments);
+    no(arguments);
   },
   JSXOpeningElement() {
-    n(arguments);
+    no(arguments);
   },
   JSXEmptyExpression() {
-    n(arguments);
+    no(arguments);
   },
   JSXSpreadAttribute() {
-    n(arguments);
+    no(arguments);
   },
   JSXText() {
-    n(arguments);
+    no(arguments);
   },
   Noop() {
-    n(arguments);
+    no(arguments);
   },
   ParenthesizedExpression() {
-    n(arguments);
+    no(arguments);
   },
   AwaitExpression() {
-    n(arguments);
+    no(arguments);
   },
   BindExpression() {
-    n(arguments);
+    no(arguments);
   },
   Decorator() {
-    n(arguments);
+    no(arguments);
   },
   DoExpression() {
-    n(arguments);
+    no(arguments);
   },
   ExportDefaultSpecifier() {
-    n(arguments);
+    no(arguments);
   },
   ExportNamespaceSpecifier() {
-    n(arguments);
+    no(arguments);
   },
   RestProperty() {
-    n(arguments);
+    no(arguments);
   },
   SpreadProperty() {
-    n(arguments);
+    no(arguments);
   },
   Binary() {
-    n(arguments);
+    no(arguments);
   },
   Scopable() {},
   BlockParent() {
-    n(arguments);
+    no(arguments);
   },
   Block() {
-    n(arguments);
+    no(arguments);
   },
   Terminatorless() {
-    n(arguments);
+    no(arguments);
   },
   CompletionStatement() {
-    n(arguments);
+    no(arguments);
   },
   Conditional() {
-    n(arguments);
+    no(arguments);
   },
   Loop() {
-    n(arguments);
+    no(arguments);
   },
   While() {
-    n(arguments);
+    no(arguments);
   },
   ExpressionWrapper() {
-    n(arguments);
+    no(arguments);
   },
   For() {
-    n(arguments);
+    no(arguments);
   },
   ForXStatement() {
-    n(arguments);
+    no(arguments);
   },
   Function() {
-    n(arguments);
+    no(arguments);
   },
   FunctionParent() {
-    n(arguments);
+    no(arguments);
   },
   Pureish() {
-    n(arguments);
+    no(arguments);
   },
   Literal() {
-    n(arguments);
+    no(arguments);
   },
   Immutable() {
-    n(arguments);
+    no(arguments);
   },
   UserWhitespacable() {
-    n(arguments);
+    no(arguments);
   },
   Method() {
-    n(arguments);
+    no(arguments);
   },
   ObjectMember() {
-    n(arguments);
+    no(arguments);
   },
   Property() {
-    n(arguments);
+    no(arguments);
   },
   UnaryLike() {
-    n(arguments);
+    no(arguments);
   },
   Pattern() {
-    n(arguments);
+    no(arguments);
   },
   Class() {
-    n(arguments);
+    no(arguments);
   },
   ModuleDeclaration() {
-    n(arguments);
+    no(arguments);
   },
   ExportDeclaration() {
-    n(arguments);
+    no(arguments);
   },
   ModuleSpecifier() {
-    n(arguments);
+    no(arguments);
   },
   Flow() {
-    n(arguments);
+    no(arguments);
   },
   FlowBaseAnnotation() {
-    n(arguments);
+    no(arguments);
   },
   FlowDeclaration() {
-    n(arguments);
+    no(arguments);
   },
   JSX() {
-    n(arguments);
+    no(arguments);
   },
   Scope() {}
 };
 
-function n(methodArguments: IArguments) {
+export default visitor;
+
+function no(methodArguments: IArguments) {
   console.warn(methodArguments.callee.name + ' is not implemented');
 }
