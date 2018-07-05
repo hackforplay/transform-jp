@@ -616,7 +616,223 @@ const visitor = {
   JSX() {
     no(arguments);
   },
-  Scope() {}
+  Scope() {},
+
+  TSAnyKeyword() {
+    no(arguments);
+  },
+
+  TSArrayType() {
+    no(arguments);
+  },
+
+  TSAsExpression() {
+    no(arguments);
+  },
+
+  TSBooleanKeyword() {
+    no(arguments);
+  },
+
+  TSCallSignatureDeclaration() {
+    no(arguments);
+  },
+
+  TSConstructSignatureDeclaration() {
+    no(arguments);
+  },
+
+  TSConstructorType() {
+    no(arguments);
+  },
+
+  TSDeclareFunction() {
+    no(arguments);
+  },
+
+  TSDeclareMethod() {
+    no(arguments);
+  },
+
+  TSEnumDeclaration() {
+    no(arguments);
+  },
+
+  TSEnumMember() {
+    no(arguments);
+  },
+
+  TSExportAssignment() {
+    no(arguments);
+  },
+
+  TSExpressionWithTypeArguments() {
+    no(arguments);
+  },
+
+  TSExternalModuleReference() {
+    no(arguments);
+  },
+
+  TSFunctionType() {
+    no(arguments);
+  },
+
+  TSImportEqualsDeclaration() {
+    no(arguments);
+  },
+
+  TSIndexSignature() {
+    no(arguments);
+  },
+
+  TSIndexedAccessType() {
+    no(arguments);
+  },
+
+  TSInterfaceBody() {
+    no(arguments);
+  },
+
+  TSInterfaceDeclaration() {
+    no(arguments);
+  },
+
+  TSIntersectionType() {
+    no(arguments);
+  },
+
+  TSLiteralType() {
+    no(arguments);
+  },
+
+  TSMappedType() {
+    no(arguments);
+  },
+
+  TSMethodSignature() {
+    no(arguments);
+  },
+
+  TSModuleBlock() {
+    no(arguments);
+  },
+
+  TSModuleDeclaration() {
+    no(arguments);
+  },
+
+  TSNamespaceExportDeclaration() {
+    no(arguments);
+  },
+
+  TSNeverKeyword() {
+    no(arguments);
+  },
+
+  TSNonNullExpression() {
+    no(arguments);
+  },
+
+  TSNullKeyword() {
+    no(arguments);
+  },
+
+  TSNumberKeyword() {
+    no(arguments);
+  },
+
+  TSObjectKeyword() {
+    no(arguments);
+  },
+
+  TSParameterProperty() {
+    no(arguments);
+  },
+
+  TSParenthesizedType() {
+    no(arguments);
+  },
+
+  TSPropertySignature() {
+    no(arguments);
+  },
+
+  TSQualifiedName() {
+    no(arguments);
+  },
+
+  TSStringKeyword() {
+    no(arguments);
+  },
+
+  TSSymbolKeyword() {
+    no(arguments);
+  },
+
+  TSThisType() {
+    no(arguments);
+  },
+
+  TSTupleType() {
+    no(arguments);
+  },
+
+  TSTypeAliasDeclaration() {
+    no(arguments);
+  },
+
+  TSTypeAnnotation() {
+    no(arguments);
+  },
+
+  TSTypeAssertion() {
+    no(arguments);
+  },
+
+  TSTypeLiteral() {
+    no(arguments);
+  },
+
+  TSTypeOperator() {
+    no(arguments);
+  },
+
+  TSTypeParameter() {
+    no(arguments);
+  },
+
+  TSTypeParameterDeclaration() {
+    no(arguments);
+  },
+
+  TSTypeParameterInstantiation() {
+    no(arguments);
+  },
+
+  TSTypePredicate() {
+    no(arguments);
+  },
+
+  TSTypeQuery() {
+    no(arguments);
+  },
+
+  TSTypeReference() {
+    no(arguments);
+  },
+
+  TSUndefinedKeyword() {
+    no(arguments);
+  },
+
+  TSUnionType() {
+    no(arguments);
+  },
+
+  TSVoidKeyword() {
+    no(arguments);
+  }
 };
 
 export default visitor;
