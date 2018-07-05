@@ -1,5 +1,4 @@
-import 'mocha';
-import { expect } from 'chai';
+import { test } from 'ava';
 import * as index from './index';
 
 const code = `
@@ -13,10 +12,9 @@ export default React.createClass({
   }
 });`;
 
-describe('Main', () => {
-  it('Get Japanese', () => {
-    index.translate(code);
-    const ja = index.getJapanese();
-    expect(ja).to.be.equals('React Component を つくる'); // 適当
-  });
+test('get Japanese', async t => {
+  index.translate(code);
+  const ja = index.getJapanese();
+
+  t.is(ja, 'React Component を つくる'); // 適当
 });

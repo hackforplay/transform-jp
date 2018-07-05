@@ -5,7 +5,7 @@
     "noImplicitAny": true,
     "noImplicitUseStrict": true,
     "moduleResolution": "node",
-    "sourceMap": true,
+    "inlineSourceMap": true,
     "outDir": "lib",
     "baseUrl": ".",
     "paths": {
