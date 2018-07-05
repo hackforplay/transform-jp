@@ -4,11 +4,7 @@
   "description": "Translate javascript to Japanese (Experimental)",
   "main": "index.js",
   "scripts": {
-    "kana": "tsc && node lib/kana.js",
-    "gen": "tsc && node lib/generate.js",
-    "ast": "tsc && node lib/ast.js",
-    "con": "tsc && node lib/concat.js",
-    "map": "tsc && node lib/map.js",
+    "build": "tsc",
     "format": "prettier 'src/**/*' --write",
     "test": "tsc && ava"
   },
