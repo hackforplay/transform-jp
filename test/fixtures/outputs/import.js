@@ -4,17 +4,3 @@ import modDefault from 'hoge';
 import * as modNamespace from 'hoge';
 // 別の場所からとってこい 「module1」 「module2→変数localName」 文字列hoge  場所は 「hoge」
 import { module1, module2 as localName } from 'hoge';
-
-// 新規作成 変数const1 入れろ 数値1
-const const1 = 1;
-// 新規作成 変数number
-let number;
-// 変数number 入れろ 数値1
-number = 1;
-// 変数number 入れろ 変数number + 数値2 + 数値3
-number = number + 2 + 3;
-
-// くりかえせ 最初だけ 新規作成 変数i 入れろ 数値0 変数i 。もし < 数値10 ならばもう一度 。毎回 変数i １ふやす
-for (let i = 0; i < 10; i++) {
-  console.log(i);
-}

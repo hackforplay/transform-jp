@@ -1,30 +1,20 @@
+import * as babylon from 'babylon';
 import generate from 'babel-generator';
 import traverse from 'babel-traverse';
-import * as fs from 'fs';
-import * as path from 'path';
 import kanaGenerator from './kana-generator';
 import KanaState from './kana-state';
 
-const testFilePath = './test/fixtures';
-const fixtures = path.resolve(testFilePath);
-
-const files = fs.readdirSync(path.join(fixtures, 'ast'));
-for (const fileName of files) {
-  const extension = path.extname(fileName);
-  if (extension === '.json') {
-    const json = fs.readFileSync(path.join(fixtures, 'ast', fileName), {
-      encoding: 'utf8'
-    });
-    const ast = JSON.parse(json);
-    const state: KanaState = { kanas: [] };
-    traverse(ast, kanaGenerator, null, state); // kana
-    console.log(state.kanas);
-    const result = generate(ast, {}); // javascript
-    const code = mergeComments(result.code, state); // merge both
-
-    const basename = path.basename(fileName, 'json');
-    fs.writeFileSync(path.join(fixtures, 'kana', basename + 'js'), code);
-  }
+/**
+ * コードにコメントとしてふりがなをつける
+ * @param source ふりがなを付けたい JavaScript ソースコード
+ */
+export default function kana(source: string) {
+  const ast = babylon.parse(source, { sourceType: 'module' });
+  const state: KanaState = { kanas: [] };
+  traverse(ast, kanaGenerator, null, state); // kana
+  const result = generate(ast, {}); // javascript
+  const code = mergeComments(result.code, state); // merge both
+  return code;
 }
 
 /**
@@ -33,6 +23,9 @@ for (const fileName of files) {
  * @param state ふりがな配列をもつオブジェクト
  */
 function mergeComments(code: string, state: KanaState) {
+  if (!state.kanas.length) {
+    return '';
+  }
   state.kanas.sort(
     (a, b) => (a.line !== b.line ? a.line - b.line : a.column - b.column)
   );
@@ -47,7 +40,7 @@ function mergeComments(code: string, state: KanaState) {
       commentsOfEachLine[line] = commentsOfEachLine[line] + ' ' + value;
     }
   }
-  return code
+  let result = code
     .split('\n')
     .map((textOfCode, lineOfCode) => {
       if (commentsOfEachLine[lineOfCode + 1]) {
@@ -57,4 +50,11 @@ function mergeComments(code: string, state: KanaState) {
       }
     })
     .join('\n');
+
+  // ファイルの最後に改行をつける
+  if (result.charAt(result.length - 1) !== '\n') {
+    result += '\n';
+  }
+
+  return result;
 }

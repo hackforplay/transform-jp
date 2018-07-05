@@ -14,11 +14,11 @@ const fixtures = path.resolve(testFilePath);
 
 // 新規作成 変数files 入れろ 文字列js
 const files = fs.readdirSync(path.join(fixtures, 'js'));
-     // 新規作成 変数fileName
+// 新規作成 変数fileName
 for (const fileName of files) {
   // 新規作成 変数extension 入れろ
   const extension = path.extname(fileName);
-      // 変数extension === 文字列.js
+  // 変数extension === 文字列.js
   if (extension === '.js') {
     // 新規作成 変数code 入れろ 文字列js
     const code = fs.readFileSync(path.join(fixtures, 'js', fileName), {
@@ -31,7 +31,7 @@ for (const fileName of files) {
     const json = JSON.stringify(ast, null, 2);
     // 新規作成 変数basename 入れろ 文字列js
     const basename = path.basename(fileName, 'js');
-                                         // 文字列ast 変数basename + 文字列json
+    // ??
     fs.writeFileSync(path.join(fixtures, 'ast', basename + 'json'), json);
   }
 }
